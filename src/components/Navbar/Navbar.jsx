@@ -1,25 +1,21 @@
 import React from "react";
 import logo from "../../assets/sperax_logo.png";
 import "./Navbar.css";
-import { GiHamburgerMenu } from "react-icons/gi";
 
 const Navbar = () => {
   return (
-    <div className="sticky top-0 z-[20] mx-auto flex w-full items-center justify-between bg-gray-900">
-      <NavbarIcons icon={<GiHamburgerMenu />} />
-      <img src={logo} alt="website logo" className="w-12 h-12" />
-      <ul className="flex justify-between w-1/5">
-        <li className="mx-2 text-white">Cryptos</li>
-        <li className="mx-2 text-white">My List</li>
-        <li className="mx-2 text-white">Transfer</li>
-        <li className="mx-2 text-white">Login</li>
-      </ul>
+    <div className="flex flex-col w-full">
+      <div className="sticky top-0 mx-auto flex w-full items-center justify-between bg-gradient-to-r from-blue-950 to-purple-800 py-5 px-2">
+        <div className="flex items-center">
+          <img src={logo} alt="logo" className="w-10  px-2" />
+          <h1 className="text-white text-lg font-medium">
+            Cryp<span className="text-teal-300 ">Ax</span>
+          </h1>
+        </div>
+        <button className="text-white font-medium ml-4 mr-0">Logout</button>
+      </div>
     </div>
   );
 };
-
-const NavbarIcons = ({ icon }) => (
-  <div className="text-white mx-1 h-5">{icon}</div>
-);
 
 export default Navbar;
