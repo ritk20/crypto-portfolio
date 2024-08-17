@@ -2,3 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: linear-gradient(to right, #172554, #6b21a8);
+  }
+}

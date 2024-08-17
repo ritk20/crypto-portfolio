@@ -1,13 +1,17 @@
 import React, { useContext, useState, createContext } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 
-const SidebarContext = createContext();
+export const SidebarContext = createContext();
 
 export default function Sidebar({ children }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <aside className="h-screen bg-gradient-to-r from-cyan-950 to-blue-950 ">
+    <aside
+      className={`z-10 fixed h-screen bg-gradient-to-r from-cyan-950 to-blue-950 ${
+        expanded ? "border-r-2 rounded-md" : ""
+      }`}
+    >
       <nav className="h-full flex flex-col">
         <div className="p-4 pb-2 flex justify-between items-center">
           <h1
