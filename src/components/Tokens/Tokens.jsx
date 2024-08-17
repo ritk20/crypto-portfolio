@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
 
 const Tokens = () => {
@@ -6,6 +6,21 @@ const Tokens = () => {
   const [tokenAddress, setTokenAddress] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [fetchTrigger, setFetchTrigger] = useState(false);
+  const { allCoin } = useContext(CoinContext);
+  const [input, setInput] = useState("");
+  const [displayCoin, setDisplayCoin] = useState([]);
+
+  const inputHandler = (e) => {
+    setInput(e.target.value);
+  };
+
+  const searchHandler = async (e) => {
+    e.preventDefault(); //prevents reloading
+    const coins = await allCoin.filter((item) => {
+      return item.name.toLowerCase().includes(input.toLowerCase());
+    });
+    displayCoin(coins);
+  };
 
   const addTokenToWatchList = (e) => {
     e.preventDefault();
@@ -52,6 +67,17 @@ const Tokens = () => {
 
   return (
     <div className="items-right">
+      <form onSubmit={searchHandler}>
+        <input
+          type="text"
+          placeholder="Search for tokens"
+          value={input}
+          onChange={inputHandler}
+          className="text-black"
+          required
+        />
+        <button type="submit">Add Token</button>
+      </form>
       {watchList.map((token) => (
         <div key={token.address}>
           <p>Token Address: {token.address}</p>
@@ -62,21 +88,6 @@ const Tokens = () => {
           </button>
         </div>
       ))}
-      <form onSubmit={addTokenToWatchList}>
-        <input
-          type="text"
-          placeholder="Token Address"
-          value={tokenAddress}
-          onChange={(e) => setTokenAddress(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Token Symbol"
-          value={tokenSymbol}
-          onChange={(e) => setTokenSymbol(e.target.value)}
-        />
-        <button type="submit">Add Token</button>
-      </form>
     </div>
   );
 };

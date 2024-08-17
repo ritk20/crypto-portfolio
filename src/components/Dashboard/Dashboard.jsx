@@ -6,8 +6,10 @@ import Transfer from "../../components/Transfer/Transfer";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import Charts from "../../components/Charts/Charts";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full h-full">
       <Navbar />
@@ -35,9 +37,20 @@ const Dashboard = () => {
 
           <div className="text-center">
             <h2 className="font-bold text-1xl md:text-3xl lg:text-4xl mb-4">
-              Track Your Tokens
+              Track Your Crypto With Our Token Tracker
             </h2>
-            <Tokens />
+            <h3 className="text-center text-1xl md:text-2xl lg:text-3xl mb-4">
+              Seamlessly add your favourite tokens to your watchList and track
+              their performance in real-time.
+            </h3>
+            <button
+              onClick={() => {
+                navigate("/list");
+              }}
+              className="w-24 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2.5 rounded"
+            >
+              My List
+            </button>
           </div>
 
           <div>

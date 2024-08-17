@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers"; // Add this line to import ethers
 
 const Cards = ({ logo, title }) => {
-  const [walletAddress, setWalletAddress] = useState("");
+  const [walletAddress, setWalletAddress] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
 
   const connectWallet = async (walletType) => {
@@ -39,7 +39,7 @@ const Cards = ({ logo, title }) => {
       }
       const signer = await provider.getSigner();
       const userAddress = await signer.getAddress();
-      setWalletAddress(userAddress);
+      setWalletAddress(...walletAddress, userAddress);
       setIsConnected(true);
       console.log(`Connected to ${walletType} Wallet:`, userAddress);
       const balance = await provider.getBalance("ethers.eth");
