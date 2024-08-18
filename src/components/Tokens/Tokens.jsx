@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
+import { CoinContext } from "../../context/CoinContext";
 
 const Tokens = () => {
   const [watchList, setWatchList] = useState([]);
   const [tokenAddress, setTokenAddress] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [fetchTrigger, setFetchTrigger] = useState(false);
-  const { allCoin } = useContext(CoinContext);
   const [input, setInput] = useState("");
   const [displayCoin, setDisplayCoin] = useState([]);
+  const { allCoin } = useContext(CoinContext);
 
   const inputHandler = (e) => {
     setInput(e.target.value);

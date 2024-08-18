@@ -23,7 +23,7 @@ export default function Sidebar({ children }) {
           </h1>
           <button
             onClick={() => setExpanded((curr) => !curr)}
-            className="mb-3 p-1 rounded-lg bg-gray-50 hover:bg-gray-100"
+            className="mb-3 p-1 rounded-lg text-black bg-gray-50 hover:bg-gray-100"
           >
             <GiHamburgerMenu />
           </button>

@@ -6,7 +6,7 @@ import { FiHome, FiUser, FiSettings, FiBell } from "react-icons/fi";
 
 const Home = () => {
   return (
-    <div className="flex">
+    <div className="flex gap-3">
       <Sidebar>
         <SidebarItem icon={<FiHome />} text="Dashboard" active />
         <SidebarItem icon={<FiUser />} text="Profile" alert />

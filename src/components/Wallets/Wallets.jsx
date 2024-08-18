@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import Cards from "./Cards";
 import metamask_logo from "../../assets/metamask_fox.png";
 import coinbase_logo from "../../assets/coinbase_logo.png";
 import electrum_logo from "../../assets/electrum_logo.png";
 import { ethers } from "ethers";
+import { WalletContext } from "../../context/WalletContext";
 
 const Wallets = () => {
-  const ProjectId = process.env.REACT_APP_INFURA_PROJECT_ID;
-  const ProjectSecret = process.env.REACT_APP_INFURA_PROJECT_SECRET;
+  const { walletAddress, setWalletAddress, connectWallet } =
+    useContext(WalletContext);
 
-  const [walletAddress, setWalletAddress] = useState("");
-  const [isConnected, setIsConnected] = useState(false);
   const handleInputChange = (event) => {
     setWalletAddress(event.target.value);
   };
@@ -18,10 +17,10 @@ const Wallets = () => {
   const connectWithAddress = async () => {
     try {
       const provider = new ethers.providers.InfuraProvider("mainnet", {
-        projectId: ProjectId,
-        projectSecret: ProjectSecret,
+        projectId: process.env.REACT_APP_INFURA_PROJECT_ID,
+        projectSecret: process.env.REACT_APP_INFURA_PROJECT_SECRET,
       });
-      // Validate the input address or ENS name
+
       if (
         !ethers.utils.isAddress(walletAddress) &&
         !walletAddress.endsWith(".eth")
@@ -36,14 +35,15 @@ const Wallets = () => {
         ethers.utils.formatEther(balance)
       );
 
-      setIsConnected(true);
+      connectWallet(walletAddress, provider); // Save the connection details to the context
     } catch (error) {
       console.error("Failed to connect with the provided address:", error);
     }
   };
+
   return (
     <>
-      <div className="m-3 mx-0 flex justify-center">
+      <div className="m-3 mx-0 flex justify-center flex-col sm:flex-row">
         <Cards logo={metamask_logo} title="Metamask" />
         <Cards logo={coinbase_logo} title="Coinbase" />
         <Cards logo={electrum_logo} title="Binance" />

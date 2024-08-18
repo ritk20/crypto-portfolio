@@ -4,7 +4,8 @@
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: __Roboto_a48f64, __Roboto_Fallback_a48f64, system-ui,arial;
     background-color: linear-gradient(to right, #172554, #6b21a8);
+    color: white;
   }
 }

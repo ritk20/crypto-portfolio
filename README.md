@@ -4,7 +4,8 @@ This is a personal project aimed to learn and improve my knowledge of React.JS a
 
 ## Key Features
 
-1. It's just a skeleton project as of now
+1. Transfer Tokens Seamlessly across wallets
+2. Check Allowance of Smart Contracts
 
 ## How to use?
 
