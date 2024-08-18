@@ -70,6 +70,7 @@ const Cards = ({ logo, title }) => {
         </h2>
       </div>
       <div className="px-6 pt-4 pb-2">
+        {w}
         <button
           className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded sm:py-2.5 sm:px-5 md:py-3 md:px-6 lg:py-3.5 lg:px-7 xl:py-4 xl:px-8"
           onClick={connectWalletHandler}

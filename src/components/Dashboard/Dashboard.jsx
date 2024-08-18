@@ -22,7 +22,7 @@ const Dashboard = () => {
         <h2 className="mt-16 text-left font-bold text-xl md:text-3xl lg:text-4xl mb-4">
           Track your portfolio's performance with real-time data
         </h2>
-        <Charts />
+        {/* <Charts /> */}
 
         <div className="features">
           <div className="text-center mb-8">

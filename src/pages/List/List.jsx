@@ -220,6 +220,7 @@ const List = () => {
                     onClick={() => {
                       navigate(`/coins/${item.id}`);
                     }}
+                    className="cursor-pointer"
                   >
                     {item.name + " - " + item.symbol}
                   </p>
