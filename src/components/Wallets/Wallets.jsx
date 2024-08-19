@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 import { WalletContext } from "../../context/WalletContext";
 
 const Wallets = () => {
-  const { walletAddress, setWalletAddress, connectWallet, disconnectWallet } =
+  const { walletAddress, connectWallet, disconnectWallet } =
     useContext(WalletContext);
   const [input, setInput] = useState("");
   const handleInputChange = (event) => {

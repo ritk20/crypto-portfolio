@@ -1,68 +1,88 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { ethers } from "ethers";
-import { WalletContext } from "../../context/WalletContext";
-import Cards from "../../components/Wallets/Cards";
-import metamask_logo from "../../assets/metamask_fox.png";
-import coinbase_logo from "../../assets/coinbase_logo.png";
-import electrum_logo from "../../assets/electrum_logo.png";
-import Wallets from "../../components/Wallets/Wallets";
 
-const Allowance = () => {
-  const [tokenAddress, setTokenAddress] = useState("");
-  const [spenderAddress, setSpenderAddress] = useState("");
-  const [allowance, setAllowance] = useState(null);
+const AllowanceChecker = () => {
+  const [walletAddress, setWalletAddress] = useState("");
+  const [tokenAllowances, setTokenAllowances] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
 
-  const [approveTokenAddress, setApproveTokenAddress] = useState("");
-  const [approveSpenderAddress, setApproveSpenderAddress] = useState("");
-  const { walletAddress, provider, connectWallet, disconnectWallet } =
-    useContext(WalletContext);
+  const infuraProjectId = process.env.REACT_APP_INFURA_PROJECT_ID;
+  const infuraProjectSecret = process.env.REACT_APP_INFURA_PROJECT_SECRET;
+
+  if (!infuraProjectId || !infuraProjectSecret) {
+    console.error(
+      "Infura project ID and secret must be set in the environment variables."
+    );
+    return <div>Error: Infura project ID and secret are not set.</div>;
+  }
+
+  const provider = new ethers.providers.InfuraProvider("mainnet", {
+    projectId: infuraProjectId,
+    projectSecret: infuraProjectSecret,
+  });
 
   const erc20ABI = [
     "function allowance(address owner, address spender) view returns (uint256)",
     "function symbol() view returns (string)",
     "function decimals() view returns (uint8)",
   ];
-  const approveSpender = async () => {
-    const contract = new ethers.Contract(
-      approveTokenAddress,
-      erc20ABI,
-      provider.getSigner()
-    );
-    const tx = await contract.approve(
-      approveSpenderAddress,
-      ethers.utils.parseUnits("1000", 18)
-    );
-    await tx.wait();
-    console.log("Allowance set successfully");
-  };
-  const getTokenAllowance = async () => {
+
+  const getAllowanceData = async () => {
     setIsFetching(true);
     try {
-      if (!ethers.utils.isAddress(tokenAddress)) {
-        alert("Invalid token address");
-        setIsFetching(false);
-        return;
-      }
-      if (!ethers.utils.isAddress(spenderAddress)) {
-        alert("Invalid spender address");
-        setIsFetching(false);
-        return;
+      // Fetch logs related to approvals from the specified wallet address
+      const logs = await provider.getLogs({
+        fromBlock: "0x0",
+        toBlock: "latest",
+        topics: [
+          ethers.utils.id("Approval(address,address,uint256)"),
+          ethers.utils.hexZeroPad(walletAddress, 32),
+        ],
+      });
+
+      const allowances = {};
+
+      // Loop through the logs and fetch allowances
+      for (let log of logs) {
+        const tokenAddress = log.address;
+        const spenderAddress = ethers.utils.hexStripZeros(log.topics[2]);
+
+        const contract = new ethers.Contract(tokenAddress, erc20ABI, provider);
+        const allowance = await contract.allowance(
+          walletAddress,
+          spenderAddress
+        );
+        const symbol = await contract.symbol();
+        const decimals = await contract.decimals();
+
+        const formattedAllowance = allowance.eq(ethers.constants.MaxUint256)
+          ? "Unlimited"
+          : ethers.utils.formatUnits(allowance, decimals);
+
+        if (!allowances[symbol]) {
+          allowances[symbol] = [];
+        }
+
+        // Check if the spenderAddress is already in the list to avoid duplicates
+        const existingEntry = allowances[symbol].find(
+          (entry) => entry.spenderAddress === spenderAddress
+        );
+
+        if (!existingEntry) {
+          allowances[symbol].push({
+            tokenAddress,
+            spenderAddress,
+            allowance: formattedAllowance,
+          });
+        }
       }
 
-      const contract = new ethers.Contract(tokenAddress, erc20ABI, provider);
-      const result = await contract.allowance(walletAddress, spenderAddress);
-      const decimals = await contract.decimals();
-      const symbol = await contract.symbol();
-      setAllowance({
-        amount: ethers.utils.formatUnits(result, decimals),
-        symbol,
-      });
-      setIsFetching(false);
+      // Update state with allowance data grouped by token symbol
+      setTokenAllowances(Object.entries(allowances));
+      console.log("Allowances", tokenAllowances);
     } catch (error) {
-      console.error("Failed to fetch allowance:", error);
-      alert("Failed to fetch allowance. Please check the console for details.");
-      setAllowance(null);
+      console.error("Failed to fetch allowances:", error);
+    } finally {
       setIsFetching(false);
     }
   };
@@ -70,97 +90,64 @@ const Allowance = () => {
   return (
     <div className="h-screen flex flex-col items-center justify-center">
       <h1 className="text-center font-bold text-3xl mb-4">
-        Token Allowance Checker
+        Wallet Allowance Checker
       </h1>
-
-      {/* <form onSubmit={approveSpender}>
-        <label className="mb-2 text-gray-700">Token Address</label>
-        <input
-          type="text"
-          placeholder="Enter token contract address"
-          value={approveTokenAddress}
-          onChange={(e) => setApproveTokenAddress(e.target.value)}
-          className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-          required
-        />
-
-        <label className="mb-2 text-gray-700">Spender Address</label>
-        <input
-          type="text"
-          placeholder="Enter spender address"
-          value={approveSpenderAddress}
-          onChange={(e) => setApproveSpenderAddress(e.target.value)}
-          className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-          required
-        />
-
-        <button type="submit">Submit</button>
-      </form> */}
-
-      {!walletAddress ? (
-        <Wallets />
-      ) : (
-        <div className="w-full max-w-md p-6 bg-white rounded-md shadow-md">
-          <div className="mb-4">
-            <p className="text-gray-700">
-              <strong>Connected Wallet:</strong> {walletAddress}
-            </p>
-            <button
-              onClick={disconnectWallet}
-              className="mt-2 text-sm text-red-500 hover:underline"
-            >
-              Disconnect
-            </button>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              getTokenAllowance();
-            }}
-            className="flex flex-col"
+      <div className="w-full max-w-4xl p-6 bg-white rounded-md shadow-md ">
+        <div className="mb-3 flex justify-center ">
+          <input
+            type="text"
+            placeholder="Enter Wallet Address"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+            className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black mx-1"
+            required
+          />
+          <button
+            onClick={getAllowanceData}
+            className="px-4  bg-green-600 text-white rounded-md hover:bg-green-700 mx-1"
+            disabled={isFetching}
           >
-            <label className="mb-2 text-gray-700">Token Address</label>
-            <input
-              type="text"
-              placeholder="Enter token contract address"
-              value={tokenAddress}
-              onChange={(e) => setTokenAddress(e.target.value)}
-              className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              required
-            />
-
-            <label className="mb-2 text-gray-700">Spender Address</label>
-            <input
-              type="text"
-              placeholder="Enter spender address"
-              value={spenderAddress}
-              onChange={(e) => setSpenderAddress(e.target.value)}
-              className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              required
-            />
-
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-              disabled={isFetching}
-            >
-              {isFetching ? "Fetching..." : "Check Allowance"}
-            </button>
-          </form>
-
-          {allowance && (
-            <div className="mt-4 p-4 bg-gray-100 rounded-md">
-              <h3 className="text-lg font-semibold">Allowance Details</h3>
-              <p>
-                You have allowed <strong>{allowance.amount || "0"}</strong>{" "}
-                <strong>{allowance.symbol || "tokens"}</strong>.
-              </p>
-            </div>
-          )}
+            {isFetching ? "Fetching..." : "Check Allowances"}
+          </button>
         </div>
-      )}
+        {tokenAllowances.length > 0 && (
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th className="py-2 text-left text-gray-600">Asset</th>
+                <th className="py-2 text-left text-gray-600">Type</th>
+                <th className="py-2 text-left text-gray-600">
+                  Approved Amount
+                </th>
+                <th className="py-2 text-left text-gray-600">
+                  Approved Spender
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {tokenAllowances.map(([symbol, spenderList]) =>
+                spenderList.map(
+                  ({ spenderAddress, allowance, tokenAddress }, index) => (
+                    <tr
+                      key={`${tokenAddress}-${spenderAddress}-${allowance}-${index}`}
+                    >
+                      <td className="py-2 text-black">{symbol}</td>
+                      <td className="py-2 text-black">Token</td>
+                      <td className="py-2 text-black">{allowance}</td>
+
+                      <td className="py-2 text-black">
+                        {spenderAddress === "None" ? "None" : spenderAddress}
+                      </td>
+                    </tr>
+                  )
+                )
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 };
 
-export default Allowance;
+export default AllowanceChecker;
