@@ -1,6 +1,6 @@
 # Crypto Portfolio
 
-This is a personal project aimed to learn and improve my knowledge of React.JS and Web3.JS. I am a relatively new developer, so any suggestions are welcomed.
+This is a personal project aimed to learn and improve my knowledge of blockchain technology, made using React.JS and ethers.JS. I am a relatively new developer, so any suggestions are welcomed.
 
 ## Key Features
 
@@ -9,17 +9,20 @@ This is a personal project aimed to learn and improve my knowledge of React.JS a
 
 ## How to use?
 
-- Download/Clone the project
-  `git clone`
-- Navigate to project directory
-  `cd crypto-portfolio`
-- Install dependencies
-  `npm install`
-- Start development build
-  `npm start`
+- Download/Clone the project <br> `git clone`
+- Navigate to project directory <br> `cd crypto-portfolio`
+- Install dependencies <br> `npm install`
+- Start development build <br> `npm start`
 - Open on localhost
 
 _I will deploy it on server as soon as basic features are added_
+
+## Technologies Used
+
+- React.JS
+- Tailwind.css
+- Ethers.JS
+- Charts.JS
 
 ## Contributing
 
