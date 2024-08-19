@@ -30,7 +30,6 @@ const Dashboard = () => {
               Connect With The Most Popular Wallets With A Single Click
             </h2>
             <Wallets />
-            <Search />
           </div>
 
           <div className="flex flex-col lg:flex-row container mx-auto px-4 py-8">

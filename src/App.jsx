@@ -3,6 +3,7 @@ import Home from "./pages/Home/Home";
 import List from "./pages/List/List";
 import TokenData from "./pages/TokenData/TokenData";
 import Transfer from "./pages/Transfer/Transfer";
+import TestTransfer from "./pages/Transfer/TestTransfer";
 import Allowance from "./pages/Allowance/Allowance";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 // import { getUsersAllLoader, getUserByIdLoader } from "./loaders";
@@ -19,6 +20,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/list" element={<List />} />
+              <Route path="/testtransfer" element={<TestTransfer />} />
               <Route path="/tokendata" element={<TokenData />} />
               <Route path="/transfer" element={<Transfer />} />
               <Route path="/allowance" element={<Allowance />} />

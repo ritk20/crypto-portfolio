@@ -5,6 +5,7 @@ import Cards from "../../components/Wallets/Cards";
 import metamask_logo from "../../assets/metamask_fox.png";
 import coinbase_logo from "../../assets/coinbase_logo.png";
 import electrum_logo from "../../assets/electrum_logo.png";
+import Wallets from "../../components/Wallets/Wallets";
 
 const Allowance = () => {
   const [tokenAddress, setTokenAddress] = useState("");
@@ -67,12 +68,12 @@ const Allowance = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gray-100">
+    <div className="h-screen flex flex-col items-center justify-center">
       <h1 className="text-center font-bold text-3xl mb-4">
         Token Allowance Checker
       </h1>
 
-      <form onSubmit={approveSpender}>
+      {/* <form onSubmit={approveSpender}>
         <label className="mb-2 text-gray-700">Token Address</label>
         <input
           type="text"
@@ -94,14 +95,10 @@ const Allowance = () => {
         />
 
         <button type="submit">Submit</button>
-      </form>
+      </form> */}
 
       {!walletAddress ? (
-        <div className="m-3 mx-0 flex justify-center">
-          <Cards logo={metamask_logo} title="Metamask" />
-          <Cards logo={coinbase_logo} title="Coinbase" />
-          <Cards logo={electrum_logo} title="Binance" />
-        </div>
+        <Wallets />
       ) : (
         <div className="w-full max-w-md p-6 bg-white rounded-md shadow-md">
           <div className="mb-4">
