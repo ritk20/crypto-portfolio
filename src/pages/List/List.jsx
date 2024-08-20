@@ -1,98 +1,55 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
-import axios from "axios";
 import { CoinContext } from "../../context/CoinContext";
-import { useNavigate } from "react-router-dom";
-import { MdArrowDropDown } from "react-icons/md";
 import { WalletContext } from "../../context/WalletContext";
+import { useNavigate } from "react-router-dom";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 const List = () => {
-  // const ProjectId = process.env.REACT_APP_INFURA_PROJECT_ID;
-  // const [walletBalance, setWalletBalance] = useState("0");
   const [watchList, setWatchList] = useState([]);
-  // const [tokenName, setTokenName] = useState("");
-  // const [errorMessage, setErrorMessage] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const { allCoin, currency, changeCurrency } = useContext(CoinContext);
   const { walletAddress } = useContext(WalletContext);
   const [displayCoin, setDisplayCoin] = useState([]);
-  const [input, setInput] = useState("");
+  const [inputDisplay, setInputDisplay] = useState("");
+  const [inputList, setInputList] = useState("");
   const navigate = useNavigate();
-
-  // Assuming you have a provider (e.g., MetaMask)
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-  // The address of the token contract (e.g., USDT)
-  const tokenAddress = "0xd38E5c25935291fFD51C9d66C3B7384494bb099A";
-
-  // The ERC-20 token ABI, which defines the functions we can call on the contract
-  const abi = [
-    "function balanceOf(address owner) view returns (uint256)",
-    "function decimals() view returns (uint8)",
-  ];
-
-  // The wallet address of the user
-  const userWalletAddress = { walletAddress };
-
-  // Creating a contract instance
-  const tokenContract = new ethers.Contract(tokenAddress, abi, provider);
-  console.log(walletAddress);
-  async function fetchTokenBalance() {
-    try {
-      // Fetch the number of decimals the token uses (e.g., USDT uses 6 decimals)
-      const decimals = await tokenContract.decimals();
-
-      // Fetch the balance of the user
-      const rawBalance = await tokenContract.balanceOf(userWalletAddress);
-
-      // Format the balance according to the decimals
-      const formattedBalance = ethers.utils.formatUnits(rawBalance, decimals);
-
-      console.log(`Balance: ${formattedBalance} USDT`);
-    } catch (error) {
-      console.error("Failed to fetch token balance:", error);
-    }
-  }
-
-  fetchTokenBalance();
-
-  // const INFURA_URL = `https://mainnet.infura.io/v3/${ProjectId}`;
-  // const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
-  // const userAddress = "0x83669E5A9a58638E72f7Fd9d864ce2F6AA9E8Bdf"; // Replace with the connected wallet address
-
-  // useEffect(() => {
-  //   getWalletBalance();
-  // }, []);
-
-  // const getWalletBalance = async () => {
-  //   try {
-  //     const balance = await provider.getBalance(userAddress);
-  //     setWalletBalance(ethers.utils.formatEther(balance)); // Convert balance from Wei to Ether
-  //   } catch (error) {
-  //     console.error("Failed to fetch wallet balance:", error);
-  //   }
-  // };
+  const [tokenBalances, setTokenBalances] = useState({}); // Caching balances
 
   const currencyHandler = (e) => {
     setLoading(true);
-    changeCurrency(e.target.value).finally(() => setLoading(false)); // Stop loading once the currency is changed
+    changeCurrency(e.target.value).finally(() => setLoading(false));
   };
 
-  const inputHandler = (e) => {
-    setInput(e.target.value);
+  const inputHandlerDisplayCoins = (e) => {
+    setInputDisplay(e.target.value);
     if (e.target.value === "") {
       setDisplayCoin(allCoin);
     }
   };
 
-  const searchHandler = async (e) => {
+  const searchHandlerDisplayCoins = async (e) => {
     e.preventDefault();
     const coins = await allCoin.filter((item) => {
-      return item.name.toLowerCase().includes(input.toLowerCase());
+      return item.name.toLowerCase().includes(inputDisplay.toLowerCase());
     });
     setDisplayCoin(coins);
-    console.log(displayCoin);
+  };
+
+  const inputHandlerWatchList = (e) => {
+    setInputList(e.target.value);
+    if (e.target.value === "") {
+      setWatchList(watchList);
+    }
+  };
+
+  const searchHandlerWatchList = (e) => {
+    e.preventDefault();
+    const coins = watchList.filter((item) => {
+      return item.name.toLowerCase().includes(inputList.toLowerCase());
+    });
+    setWatchList(coins);
   };
 
   const addToWatchList = (coin) => {
@@ -111,280 +68,264 @@ const List = () => {
 
   useEffect(() => {
     setDisplayCoin(allCoin);
-    console.log("Display Coin:", allCoin); // Debugging line
   }, [allCoin]);
+  useEffect(() => {
+    if (walletAddress) {
+      fetchNewBalances();
+    }
+  }, [watchList]);
+  const fetchNewBalances = async () => {
+    if (!walletAddress) return;
 
-  // const getTokenDetailsByName = async (name) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://api.coingecko.com/api/v3/coins/ethereum/contract/${name}`
-  //     );
-  //     if (response.data) {
-  //       return {
-  //         address: response.data.contract_address,
-  //         symbol: response.data.symbol,
-  //         price: response.data.market_data.current_price.usd,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     console.error(`Failed to fetch details for ${name}:`, error);
-  //     return null;
-  //   }
-  // };
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const erc20ABI = [
+      "function balanceOf(address owner) view returns (uint256)",
+    ];
 
-  // const getTokenBalance = async (tokenAddress) => {
-  //   try {
-  //     const erc20ABI = [
-  //       "function balanceOf(address owner) view returns (uint256)",
-  //     ];
-  //     const contract = new ethers.Contract(tokenAddress, erc20ABI, provider);
-  //     const balance = await contract.balanceOf(userAddress);
-  //     return ethers.utils.formatUnits(balance, 18); // Adjust for token decimals if needed
-  //   } catch (error) {
-  //     console.error(`Failed to fetch balance for ${tokenAddress}:`, error);
-  //     return null;
-  //   }
-  // };
+    const newBalances = {};
 
-  // const addTokenToWatchList = async (e) => {
-  //   e.preventDefault();
-  //   setErrorMessage("");
+    // Filter out tokens that do not have a contractAddress
+    const newTokens = watchList.filter(
+      (item) => item.contractAddress && !(item.id in tokenBalances)
+    );
 
-  //   const tokenDetails = await getTokenDetailsByName(tokenName.toLowerCase());
-  //   if (!tokenDetails) {
-  //     setErrorMessage("Token not found. Please enter a valid token name.");
-  //     return;
-  //   }
+    await Promise.all(
+      newTokens.map(async (item) => {
+        try {
+          const contract = new ethers.Contract(
+            item.contractAddress,
+            erc20ABI,
+            provider
+          );
+          const balance = await contract.balanceOf(walletAddress);
+          const formattedBalance = ethers.utils.formatUnits(
+            balance,
+            item.decimals
+          );
+          newBalances[item.id] = formattedBalance;
+        } catch (error) {
+          console.error(`Failed to fetch balance for ${item.name}:`, error);
+          newBalances[item.id] = "Error";
+        }
+      })
+    );
 
-  //   const tokenBalance = await getTokenBalance(tokenDetails.address);
-  //   const balanceInUSD = (tokenBalance * tokenDetails.price).toFixed(2);
-
-  //   setWatchList((prevWatchList) => [
-  //     ...prevWatchList,
-  //     {
-  //       name: tokenName,
-  //       address: tokenDetails.address,
-  //       symbol: tokenDetails.symbol,
-  //       balance: tokenBalance,
-  //       balanceInUSD,
-  //     },
-  //   ]);
-  //   setTokenName("");
-  // };
-
-  // const removeTokenFromWatchList = (tokenAddress) => {
-  //   setWatchList((prevWatchList) =>
-  //     prevWatchList.filter((token) => token.address !== tokenAddress)
-  //   );
-  // };
+    setTokenBalances((prevBalances) => ({ ...prevBalances, ...newBalances }));
+  };
 
   return (
-    <div className="flex">
-      <div>{/* <h3>Wallet Balance (ETH): {walletBalance}</h3> */}</div>
-      {/* {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      {watchList.map((token) => (
-        <div key={token.address}>
-          <p>Token Name: {token.name}</p>
-          <p>Token Address: {token.address}</p>
-          <p>Token Symbol: {token.symbol}</p>
-          <p>Token Balance: {token.balance}</p>
-          <p>Token Balance (USD): ${token.balanceInUSD}</p>
-          <button onClick={() => removeTokenFromWatchList(token.address)}>
-            Remove
-          </button>
-        </div>
-      ))}
-      <form onSubmit={addTokenToWatchList}>
-        <input
-          type="text"
-          placeholder="Token Name"
-          value={tokenName}
-          onChange={(e) => setTokenName(e.target.value)}
-        />
-        <button type="submit">Add Token</button>
-      </form> */}
-      {/* <nav className="flex">
-        <h2>Add Tokens</h2>
-        <select onChange={currencyHandler}>
-          <option value="usd">USD</option>
-          <option value="eur">EUR</option>
-          <option value="inr"></option>
-        </select>
-      </nav> */}
-      <div className="flex flex-col">
-        <div className="flex justify-center">
-          <form
-            onSubmit={searchHandler}
-            disabled={loading}
-            className="flex justify-center items-center p-0.5 w-[70%] bg-white rounded-md text-xl gap-2 m-2"
-          >
-            <input
-              onChange={inputHandler}
-              value={input}
-              type="text"
-              placeholder="Search Crypto"
-              className="text-black flex-1 text-bas outline-none border-none pl-2"
-              list="coinList"
-              required
-            />
-
-            <datalist id="coinList">
-              {watchList.map((item, index) => (
-                <option key={index} value={item.name} />
-              ))}
-            </datalist>
-
-            <button
-              type="submit"
-              className="border-none bg-purple-600 text-white text-base py-1.5 px-6 rounded-md cursor-pointer"
-            >
-              Search
-            </button>
-          </form>
-        </div>
-        <div className="max-w-[800px] m-auto bg-gradient-to-b from-blue-950 via-purple-900 to-blue-950 rounded-md">
-          <div className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr] py-1 px-4 items-center border-b-1">
-            <p>#</p>
-            <p>Coins</p>
-            <p>Price</p>
-            <p>24H Change</p>
-            <p className="flex justify-center">Market Cap</p>
-            <p className="flex justify-end mr-2">Add Token</p>
-          </div>
-          {watchList.slice(0, 10).map((item, index) => (
-            <div className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr] py-1 px-4 items-center border-b-1">
-              <p>{item.market_cap_rank}</p>
-              <div className="flex items-center gap-2">
-                <img src={item.image} alt={item.id} className="w-[35px]" />
-                <p
-                  onClick={() => {
-                    navigate(`/coins/${item.id}`);
-                  }}
-                  className="cursor-pointer"
-                >
-                  {item.name + " - " + item.symbol}
-                </p>
-              </div>
-              <p>
-                {currency.symbol} {item.current_price.toLocaleString()}
-              </p>
-              <p
-                className={`flex justify-center ${
-                  item.price_change_percentage_24h > 0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
-                {Math.floor(item.price_change_percentage_24h * 100) / 100}
-              </p>
-              <p className="flex justify-center">
-                {currency.symbol} {item.market_cap.toLocaleString()}
-              </p>
-              <button
-                className="flex justify-center ml-2"
-                onClick={() => removeTokenFromWatchList(item)}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-      <aside
-        className={`z-10 fixed h-screen bg-gradient-to-r from-cyan-950 to-blue-950 ${
-          expanded ? "border-r-2 rounded-md" : ""
-        }`}
-      >
-        <div className="flex justify-center p-2 m-2">
-          <h2 className="px-2 mx-2 font-medium">Add Tokens</h2>
+    <div className="flex flex-col min-h-screen">
+      <nav className="flex items-center justify-between p-4 bg-blue-800 text-white shadow-md">
+        <h2 className="text-lg font-semibold">Crypto Watchlist</h2>
+        <div className="flex items-center space-x-4">
           <select
             onChange={currencyHandler}
-            className="border-none bg-white text-black text-base py-0.5 px-2 rounded-md cursor-pointer"
+            className="px-2 py-1 bg-white text-black rounded-md"
           >
             <option value="usd">USD</option>
             <option value="eur">EUR</option>
             <option value="inr">INR</option>
           </select>
+          <button
+            onClick={() => setExpanded((curr) => !curr)}
+            className="p-2 rounded-md bg-gray-200 text-black hover:bg-gray-300"
+          >
+            <GiHamburgerMenu size={20} />
+          </button>
         </div>
-        <div className="flex flex-col">
-          <div className="flex justify-center">
+      </nav>
+      <div className="flex">
+        <div>{/* <h3>Wallet Balance (ETH): {walletBalance}</h3> */}</div>
+
+        <div className="container mx-auto flex flex-col">
+          <div className="flex justify-center p-2 m-2">
             <form
-              onSubmit={searchHandler}
-              className="flex justify-center items-center p-0.5 w-[70%] bg-white rounded-md text-xl gap-2 m-2"
+              onSubmit={searchHandlerWatchList}
+              className="flex items-center max-w-lg p-2 bg-white rounded-md shadow-md"
             >
               <input
-                onChange={inputHandler}
-                value={input}
+                onChange={inputHandlerWatchList}
+                value={inputList}
                 type="text"
-                placeholder="Search Crypto"
-                className="text-black flex-1 text-bas outline-none border-none pl-2"
+                placeholder="Search Your Tokens"
+                className="text-black flex-grow text-base outline-none border-none pl-2"
                 list="coinList"
                 required
               />
-
               <datalist id="coinList">
-                {allCoin.map((item, index) => (
+                {watchList.map((item, index) => (
                   <option key={index} value={item.name} />
                 ))}
               </datalist>
-
               <button
                 type="submit"
-                className="border-none bg-purple-600 text-white text-base py-1.5 px-6 rounded-md cursor-pointer"
+                className="px-4 py-2 text-white bg-purple-600 rounded-r-md hover:bg-purple-700"
               >
                 Search
               </button>
             </form>
           </div>
-          <div className="max-w-[800px] m-auto bg-gradient-to-b from-blue-950 via-purple-900 to-blue-950 rounded-md">
-            <div className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr] py-1 px-4 items-center border-b-1">
-              <p>#</p>
-              <p>Coins</p>
-              <p>Price</p>
-              <p>24H Change</p>
-              <p className="flex justify-center">Market Cap</p>
-              <p className="flex justify-end mr-2">Add Token</p>
+          {!watchList.length ? (
+            <div className="flex flex-col justify-center">
+              <h1 className="flex justify-center">No Token Added</h1>
+              <button onClick={() => setExpanded((curr) => !curr)} className="">
+                Click to add tokens to your Watch List
+              </button>
             </div>
-            {displayCoin.slice(0, 10).map((item, index) => (
-              <div className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr] py-1 px-4 items-center border-b-1">
-                <p>{item.market_cap_rank}</p>
-                <div className="flex items-center gap-2">
-                  <img src={item.image} alt={item.id} className="w-[35px]" />
-                  <p
-                    onClick={() => {
-                      navigate(`/coins/${item.id}`);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    {item.name + " - " + item.symbol}
-                  </p>
-                </div>
-                <p>
-                  {currency.symbol} {item.current_price.toLocaleString()}
-                </p>
-                <p
-                  className={`flex justify-center ${
-                    item.price_change_percentage_24h > 0
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {Math.floor(item.price_change_percentage_24h * 100) / 100}
-                </p>
-                <p className="flex justify-center">
-                  {currency.symbol} {item.market_cap.toLocaleString()}
-                </p>
-                <button
-                  className="flex justify-center ml-2"
-                  onClick={() => addToWatchList(item)}
-                >
-                  Add
-                </button>
+          ) : (
+            <div className="max-w-[800px] m-auto bg-gradient-to-b from-blue-950 via-purple-900 to-blue-950 rounded-md">
+              <div className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr_1fr] py-1 px-4 items-center border-b-1">
+                <p>#</p>
+                <p>Coins</p>
+                <p>Price</p>
+                <p>24H Change</p>
+                <p className="flex justify-center">Market Cap</p>
+                <p className="flex justify-center">Balance</p>
+                <p className="flex justify-end mr-2">Remove</p>
               </div>
-            ))}
-          </div>
+              {watchList.slice(0, 10).map((item, index) => (
+                <div
+                  key={item.id}
+                  className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr_1fr] py-1 px-4 items-center border-b-1"
+                >
+                  <p>{item.market_cap_rank}</p>
+                  <div className="flex items-center gap-2">
+                    <img src={item.image} alt={item.id} className="w-[35px]" />
+                    <p
+                      onClick={() => {
+                        navigate(`/coins/${item.id}`);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {item.name + " - " + item.symbol}
+                    </p>
+                  </div>
+                  <p>
+                    {currency.symbol} {item.current_price.toLocaleString()}
+                  </p>
+                  <p
+                    className={`flex justify-center ${
+                      item.price_change_percentage_24h > 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {Math.floor(item.price_change_percentage_24h * 100) / 100}
+                  </p>
+                  <p className="flex justify-center">
+                    {currency.symbol} {item.market_cap.toLocaleString()}
+                  </p>
+                  <p className="flex justify-center">
+                    {item.balance || "Loading..."}
+                  </p>
+                  <button
+                    className="flex justify-center ml-2"
+                    onClick={() => removeTokenFromWatchList(item)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </aside>
+        {expanded && (
+          <aside
+            className={`z-10 fixed top-0 right-0 h-screen bg-gradient-to-r from-cyan-950 to-blue-950 transition-transform duration-300 ease-in-out ${
+              expanded
+                ? "transform translate-x-0"
+                : "transform translate-x-full"
+            } ${expanded ? "border-l-2 rounded-md" : ""}`}
+          >
+            <div className="flex justify-center">
+              <button
+                onClick={() => setExpanded((curr) => !curr)}
+                className="px-2 h-8 mx-2 my-9 rounded-md bg-gray-200 text-black hover:bg-gray-300"
+              >
+                <GiHamburgerMenu size={20} />
+              </button>
+              <div className="flex flex-col items-center py-6">
+                <form
+                  onSubmit={searchHandlerDisplayCoins}
+                  className="flex items-center w-full max-w-lg p-2 bg-white rounded-md shadow-md"
+                >
+                  <input
+                    onChange={inputHandlerDisplayCoins}
+                    value={inputDisplay}
+                    type="text"
+                    placeholder="Search Crypto"
+                    className="flex-grow p-2 text-gray-700 rounded-l-md outline-none"
+                    list="coinList"
+                    required
+                  />
+                  <datalist id="coinList">
+                    {displayCoin.map((item, index) => (
+                      <option key={index} value={item.name} />
+                    ))}
+                  </datalist>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-white bg-purple-600 rounded-r-md hover:bg-purple-700"
+                  >
+                    Search
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div className="max-w-4xl mx-auto bg-gradient-to-b from-blue-900 via-purple-800 to-blue-900 rounded-md p-4 shadow-md">
+              <div className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr] gap-4 py-2 border-b-2 border-white">
+                <p>#</p>
+                <p>Coins</p>
+                <p>Price</p>
+                <p>24H Change</p>
+                <p className="text-center">Market Cap</p>
+                <p className="text-right">Add Token</p>
+              </div>
+              {displayCoin.slice(0, 10).map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr] gap-4 py-2 items-center border-b-2 border-white"
+                >
+                  <p>{item.market_cap_rank}</p>
+                  <div className="flex items-center gap-2">
+                    <img src={item.image} alt={item.id} className="w-8 h-8" />
+                    <p
+                      onClick={() => {
+                        navigate(`/coins/${item.id}`);
+                      }}
+                      className="cursor-pointer text-white hover:underline"
+                    >
+                      {item.name} - {item.symbol}
+                    </p>
+                  </div>
+                  <p>
+                    {currency.symbol} {item.current_price.toLocaleString()}
+                  </p>
+                  <p
+                    className={`text-center ${
+                      item.price_change_percentage_24h > 0
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {item.price_change_percentage_24h.toFixed(2)}%
+                  </p>
+                  <p className="text-center">
+                    {currency.symbol} {item.market_cap.toLocaleString()}
+                  </p>
+                  <button
+                    className="px-2 py-1 text-sm text-white bg-green-500 rounded-md hover:bg-green-600"
+                    onClick={() => addToWatchList(item)}
+                  >
+                    Add
+                  </button>
+                </div>
+              ))}
+            </div>
+          </aside>
+        )}
+      </div>
     </div>
   );
 };

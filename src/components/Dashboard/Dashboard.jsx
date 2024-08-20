@@ -1,7 +1,5 @@
 import React from "react";
 import Wallets from "../../components/Wallets/Wallets";
-import Search from "../../components/Search/Search";
-import Transfer from "../../components/Transfer/Transfer";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import Charts from "../../components/Charts/Charts";

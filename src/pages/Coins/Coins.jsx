@@ -35,15 +35,27 @@ const Coins = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center mt-5">
-      <aside className="flex flex-col justify-center m-3 p-2 w-[30%]">
-        <img src={coin.image.large} alt={coin.name} />
-        <h1 className="flex justify-center text-3xl shadow-sm font-semibold">
+    <div className="flex flex-col md:flex-row items-center w-full h-screen m-0 p-0 overflow-auto">
+      <aside className="flex flex-col justify-center m-3 p-2 w-full md:w-[30%]">
+        <div className="flex justify-center">
+          <img
+            src={coin.image.large}
+            alt={coin.name}
+            className="mb-3 w-60 h-60 object-contain"
+          />
+        </div>
+        <h1 className="flex justify-center text-3xl shadow-sm font-semibold mb-2">
           {coin.name}
         </h1>
-        <h2 className="">Rank - {coin.market_cap_rank}</h2>
-        <h2>Current Price - </h2>
-        <h2>Market Cap - </h2>
+        <h2 className="mb-1 flex justify-center">
+          Rank - {coin.market_cap_rank}
+        </h2>
+        <h2 className="mb-1 flex justify-center">
+          Current Price - {coin.market_data.current_price.usd} USD
+        </h2>
+        <h2 className="mb-1 flex justify-center">
+          Market Cap - {coin.market_data.market_cap.usd} USD
+        </h2>
       </aside>
       <Charts coin={coin} />
     </div>
