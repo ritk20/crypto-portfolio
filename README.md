@@ -4,8 +4,9 @@ This is a personal project aimed to learn and improve my knowledge of blockchain
 
 ## Key Features
 
-1. Transfer Tokens Seamlessly across wallets
-2. Check Allowance of Smart Contracts
+1. Add your favourite tokens to your WatchList
+2. Transfer Tokens Seamlessly across wallets
+3. Check Allowance of Smart Contracts
 
 ## How to use?
 

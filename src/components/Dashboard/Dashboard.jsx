@@ -19,7 +19,7 @@ const Dashboard = () => {
           </span>{" "}
           Portfolio App
         </h1>
-        <h2 className="mt-16 text-left font-bold text-xl md:text-3xl lg:text-4xl mb-4">
+        <h2 className="mt-16 text-center font-bold text-xl md:text-3xl lg:text-4xl mb-4">
           Track your portfolio's performance with real-time data
         </h2>
         {/* <Charts /> */}
