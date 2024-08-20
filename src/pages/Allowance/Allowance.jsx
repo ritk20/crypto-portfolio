@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
+import Navbar from "../../components/Navbar/Navbar";
 
 const AllowanceChecker = () => {
   const [walletAddress, setWalletAddress] = useState("");
@@ -88,63 +89,66 @@ const AllowanceChecker = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <h1 className="text-center font-bold text-3xl mb-4">
-        Wallet Allowance Checker
-      </h1>
-      <div className="w-full max-w-4xl p-6 bg-white rounded-md shadow-md ">
-        <div className="mb-3 flex justify-center ">
-          <input
-            type="text"
-            placeholder="Enter Wallet Address"
-            value={walletAddress}
-            onChange={(e) => setWalletAddress(e.target.value)}
-            className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black mx-1"
-            required
-          />
-          <button
-            onClick={getAllowanceData}
-            className="px-4  bg-green-600 text-white rounded-md hover:bg-green-700 mx-1"
-            disabled={isFetching}
-          >
-            {isFetching ? "Fetching..." : "Check Allowances"}
-          </button>
-        </div>
-        {tokenAllowances.length > 0 && (
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 text-left text-gray-600">Asset</th>
-                <th className="py-2 text-left text-gray-600">Type</th>
-                <th className="py-2 text-left text-gray-600">
-                  Approved Amount
-                </th>
-                <th className="py-2 text-left text-gray-600">
-                  Approved Spender
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tokenAllowances.map(([symbol, spenderList]) =>
-                spenderList.map(
-                  ({ spenderAddress, allowance, tokenAddress }, index) => (
-                    <tr
-                      key={`${tokenAddress}-${spenderAddress}-${allowance}-${index}`}
-                    >
-                      <td className="py-2 text-black">{symbol}</td>
-                      <td className="py-2 text-black">Token</td>
-                      <td className="py-2 text-black">{allowance}</td>
+    <div className="h-screen">
+      <Navbar />
+      <div className="flex flex-col items-center justify-center mt-40">
+        <h1 className="text-center font-bold text-3xl mb-4">
+          Wallet Allowance Checker
+        </h1>
+        <div className="w-full max-w-3xl p-6 bg-white rounded-md shadow-md ">
+          <div className="mb-3 flex justify-center ">
+            <input
+              type="text"
+              placeholder="Enter Wallet Address"
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
+              className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black mx-1"
+              required
+            />
+            <button
+              onClick={getAllowanceData}
+              className="px-4  bg-green-600 text-white rounded-md hover:bg-green-700 mx-1"
+              disabled={isFetching}
+            >
+              {isFetching ? "Fetching..." : "Check Allowances"}
+            </button>
+          </div>
+          {tokenAllowances.length > 0 && (
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-2 text-left text-gray-600">Asset</th>
+                  <th className="py-2 text-left text-gray-600">Type</th>
+                  <th className="py-2 text-left text-gray-600">
+                    Approved Amount
+                  </th>
+                  <th className="py-2 text-left text-gray-600">
+                    Approved Spender
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {tokenAllowances.map(([symbol, spenderList]) =>
+                  spenderList.map(
+                    ({ spenderAddress, allowance, tokenAddress }, index) => (
+                      <tr
+                        key={`${tokenAddress}-${spenderAddress}-${allowance}-${index}`}
+                      >
+                        <td className="py-2 text-black">{symbol}</td>
+                        <td className="py-2 text-black">Token</td>
+                        <td className="py-2 text-black">{allowance}</td>
 
-                      <td className="py-2 text-black">
-                        {spenderAddress === "None" ? "None" : spenderAddress}
-                      </td>
-                    </tr>
+                        <td className="py-2 text-black">
+                          {spenderAddress === "None" ? "None" : spenderAddress}
+                        </td>
+                      </tr>
+                    )
                   )
-                )
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );

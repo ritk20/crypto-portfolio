@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { WalletContext } from "../../context/WalletContext";
 import Wallets from "../../components/Wallets/Wallets";
+import Navbar from "../../components/Navbar/Navbar";
 
 const TokenTransfer = () => {
   const [recipient, setRecipient] = useState("");
@@ -66,62 +67,65 @@ const TokenTransfer = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <h1 className="text-center font-bold text-3xl mb-4">
-        Transfer Tokens With Just A Few Clicks
-      </h1>
-      {!walletAddress ? (
-        <Wallets />
-      ) : (
-        <div className="w-full max-w-md p-6 bg-white rounded-md shadow-md">
-          <div className="mb-4">
-            <p className="text-gray-700">
-              <strong>Connected Wallet:</strong> {walletAddress}
-            </p>
-            <button
-              onClick={disconnectWallet}
-              className="mt-2 text-sm text-red-500 hover:underline"
-            >
-              Disconnect
-            </button>
+    <div className="h-screen">
+      <Navbar />
+      <div className="flex flex-col items-center justify-center mt-5">
+        <h1 className="text-center font-bold text-3xl mb-4">
+          Transfer Tokens With Just A Few Clicks
+        </h1>
+        {!walletAddress ? (
+          <Wallets />
+        ) : (
+          <div className="w-full max-w-md p-6 bg-white rounded-md shadow-md">
+            <div className="mb-4">
+              <p className="text-gray-700">
+                <strong>Connected Wallet:</strong> {walletAddress}
+              </p>
+              <button
+                onClick={disconnectWallet}
+                className="mt-2 text-sm text-red-500 hover:underline"
+              >
+                Disconnect
+              </button>
+            </div>
+            <form onSubmit={handleTransfer} className="flex flex-col">
+              <label className="mb-2 text-gray-700">Token Address:</label>
+              <input
+                type="text"
+                value={tokenAddress}
+                placeholder="Enter token contract address"
+                onChange={(e) => setTokenAddress(e.target.value)}
+                required
+                className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              />
+              <label className="mb-2 text-gray-700">Recipient Address:</label>
+              <input
+                type="text"
+                placeholder="Enter Recipient Address"
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                required
+                className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              />
+              <label className="mb-2 text-gray-700 font-normal">Amount:</label>
+              <input
+                type="text"
+                placeholder="Amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                Transfer
+              </button>
+            </form>
           </div>
-          <form onSubmit={handleTransfer} className="flex flex-col">
-            <label className="mb-2 text-gray-700">Token Address:</label>
-            <input
-              type="text"
-              value={tokenAddress}
-              placeholder="Enter token contract address"
-              onChange={(e) => setTokenAddress(e.target.value)}
-              required
-              className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-            />
-            <label className="mb-2 text-gray-700">Recipient Address:</label>
-            <input
-              type="text"
-              placeholder="Enter Recipient Address"
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              required
-              className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-            />
-            <label className="mb-2 text-gray-700 font-normal">Amount:</label>
-            <input
-              type="text"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-              className="mb-4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-            >
-              Transfer
-            </button>
-          </form>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

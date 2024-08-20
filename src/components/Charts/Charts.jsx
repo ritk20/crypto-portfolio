@@ -5,6 +5,7 @@ import { Line } from "react-chartjs-2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { chartDays } from "../../functions/data";
+import Loader from "../../components/Loader/Loader";
 
 import {
   Chart as ChartJS,
@@ -94,7 +95,7 @@ const Charts = ({ coin }) => {
       }`}
     >
       {!historicalData.length ? (
-        <h1 className="text-white text-lg font-semibold">Loading...</h1>
+        <Loader />
       ) : (
         <>
           <Line

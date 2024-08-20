@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { CoinContext } from "../../context/CoinContext";
-import CoinInfo from "./CoinInfo";
 import axios from "axios";
 import Charts from "../../components/Charts/Charts";
+import Loader from "../../components/Loader/Loader";
 
 const Coins = () => {
   const api_key = process.env.REACT_APP_API_KEY;
@@ -31,7 +30,11 @@ const Coins = () => {
   }, [id, api_key]);
 
   if (!coin) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen w-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
   return (

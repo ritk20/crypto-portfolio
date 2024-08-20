@@ -3,15 +3,7 @@ import React from "react";
 const Footer = () => {
   return (
     <footer class=" text-white py-8 w-screen border-t-2 border-gray-800">
-      <div class="container mx-auto grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 px-6">
-        <div class="flex flex-col">
-          <h3 class="text-lg font-bold mb-4">Crypto Portfolio App</h3>
-          <p class="mb-4">
-            Manage your crypto assets, track allowances, and stay informed with
-            real-time data.
-          </p>
-        </div>
-
+      <div class="container mx-auto grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr] gap-8 px-6">
         <div class="flex flex-col">
           <h3 class="text-lg font-bold mb-4">Quick Links</h3>
           <ul>

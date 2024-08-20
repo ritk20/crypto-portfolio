@@ -2,7 +2,6 @@ import React from "react";
 import Wallets from "../../components/Wallets/Wallets";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import Charts from "../../components/Charts/Charts";
 import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const navigate = useNavigate();

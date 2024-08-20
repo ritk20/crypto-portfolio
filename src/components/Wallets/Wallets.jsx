@@ -58,14 +58,15 @@ const Wallets = () => {
   return (
     <div className="container mx-auto p-4 flex justify-center">
       {walletAddress ? (
-        <div className="w-full max-w-md p-6 bg-white rounded-md shadow-md mx-28">
+        <div className="w-full max-w-md p-5 bg-white rounded-md shadow-md mx-28">
           <div className="mb-4">
             <p className="text-gray-700">
-              <strong>Connected Wallet:</strong> {walletAddress}
+              <strong className="font-bold text-xl">Connected Wallet:</strong>{" "}
+              {walletAddress}
             </p>
             <button
               onClick={disconnectWallet}
-              className="mt-2 text-sm text-red-500 hover:underline"
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1.5 px-4 rounded mt-4"
             >
               Disconnect
             </button>

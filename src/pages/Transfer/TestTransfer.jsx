@@ -2,10 +2,12 @@ import React, { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { WalletContext } from "../../context/WalletContext";
 import Wallets from "../../components/Wallets/Wallets";
+import Loader from "../../components/Loader/Loader";
 
 const TestTransfer = () => {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const { walletAddress, disconnectWallet } = useContext(WalletContext);
 
@@ -18,6 +20,7 @@ const TestTransfer = () => {
     }
 
     try {
+      setIsLoading(true); // Start loader
       // Request wallet connection
       await window.ethereum.request({ method: "eth_requestAccounts" });
 
@@ -44,8 +47,17 @@ const TestTransfer = () => {
     } catch (error) {
       console.error("Transfer failed:", error);
       alert("Transfer failed. Please check the console for details.");
+    } finally {
+      setIsLoading(false); // Stop loader
     }
   };
+
+  if (isLoading)
+    return (
+      <div className="h-screen flex flex-col items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
