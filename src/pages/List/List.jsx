@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { CoinContext } from "../../context/CoinContext";
 import { WalletContext } from "../../context/WalletContext";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.png";
 
 const List = () => {
   const [watchList, setWatchList] = useState([]);
@@ -125,7 +126,15 @@ const List = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="flex items-center justify-between p-4 bg-blue-800 text-white shadow-md">
-        <h2 className="text-lg font-semibold">Crypto Watchlist</h2>
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          <img src={logo} alt="logo" className="w-10 px-2" />
+          <h1 className="text-white text-lg font-medium">
+            Cryp<span className="text-teal-300 ">Ax</span>
+          </h1>
+        </div>
         <div className="flex items-center space-x-4">
           <select
             onChange={currencyHandler}
@@ -254,7 +263,7 @@ const List = () => {
                         <div className="flex justify-end mr-2">
                           <button
                             onClick={() => removeTokenFromWatchList(item)}
-                            className="bg-red-600 text-white font-bold py-1 rounded-md flex justify-center hover:bg-red-700 w-14"
+                            className="bg-red-600 text-white font-bold py-0.5 rounded-md flex justify-center hover:bg-red-700 w-12"
                           >
                             X
                           </button>
